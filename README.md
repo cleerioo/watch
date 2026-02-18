@@ -1,88 +1,82 @@
 # BrandsHub49 Watch Store
 
-Premium watch ecommerce website with a full Node.js backend (auth, profile, cart, wishlist, orders) and responsive multi-page frontend.
+Premium watch ecommerce website with full backend APIs.
 
 ## Stack
 
 - Frontend: HTML, CSS, Vanilla JS
-- Backend: Node.js (`backend/server.js`) using built-in modules only
-- Data storage: JSON files (configurable with `DATA_DIR`)
+- Backend: Node.js (`backend/server.js`)
+- Persistence:
+  - PostgreSQL (recommended, via `DATABASE_URL`)
+  - JSON-file fallback (if `DATABASE_URL` is not set)
 
 ## Features
 
-- Home, shop, product detail, cart, checkout, blog, contact, account pages
-- Auth system: register, login, logout, session token
-- Account dashboard: profile, address, order history, wishlist
-- Product APIs with filtering/sorting support
-- Cart, wishlist, and orders persisted by backend
+- Auth: register/login/logout/session
+- Account: profile + address updates
+- Ecommerce: cart, wishlist, checkout, orders
+- Product/content APIs and frontend pages
 
 ## Local Run
 
 ```bash
+npm install
 npm start
 ```
 
-Open:
+Open: [http://localhost:8080](http://localhost:8080)
 
-- [http://localhost:8080](http://localhost:8080)
+## Env Variables
 
-## Important Env Vars
+Use `.env.example` as reference.
 
-- `PORT` (default: `8080`)
-- `HOST` (default: `127.0.0.1`)
-- `DATA_DIR` (default: `backend/data`)
-- `SESSION_DAYS` (default: `30`)
+- `PORT` default `8080`
+- `HOST` default `127.0.0.1`
+- `SESSION_DAYS` default `30`
+- `DATABASE_URL` PostgreSQL connection string
+- `DB_SSL` default `require` (`disable` for local non-SSL postgres)
+- `DATA_DIR` JSON fallback directory (`backend/data` by default)
 
-## GitHub Setup
+## Supabase Database Setup (Recommended)
 
-1. Create a new empty repo on GitHub (for example: `brandshub49-store`).
-2. Run these commands in this project:
+1. Create project on [Supabase](https://supabase.com).
+2. Go to `Project Settings -> Database`.
+3. Copy the connection string (URI format) and use it as `DATABASE_URL`.
+4. Keep `DB_SSL=require`.
+5. Restart backend.
 
-```bash
-git add .
-git commit -m "Initial ecommerce website with backend"
-git remote add origin https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
-git push -u origin main
-```
+Notes:
 
-## Deployment Option A (Recommended): Render Full Stack
+- Backend auto-creates required table (`app_store`) and seed keys.
+- You can also run SQL manually from `backend/sql/init.sql`.
 
-This keeps frontend + backend on one domain and supports persistent data using a disk mount.
+## Render Deployment (Current Repo Setup)
 
-Files already prepared:
-
-- `render.yaml`
-- `package.json` with `npm start`
+This repo includes `render.yaml`.
 
 Steps:
 
-1. Push this repo to GitHub.
-2. In Render, create a new Blueprint/Web Service from this repo.
-3. Render will apply `render.yaml` automatically.
-4. After deploy, open your Render URL.
+1. Push repo to GitHub.
+2. Create Render Web Service from this repo.
+3. In Render environment variables, set:
+   - `HOST=0.0.0.0`
+   - `SESSION_DAYS=30`
+   - `DB_SSL=require`
+   - `DATABASE_URL=<your supabase postgres uri>`
+4. Deploy.
 
-## Deployment Option B: Vercel Frontend + Render Backend
+Optional fallback mode (no DB):
 
-Use this only if you want Vercel for static pages.
+- Set `DATA_DIR=/tmp/brandshub49` and leave `DATABASE_URL` empty.
+- This is demo-only and data is not durable on free hosting restarts.
 
-Files already prepared:
+## Vercel Frontend + Render Backend (Optional)
 
-- `vercel.json`
+If using Vercel frontend, update `vercel.json` to point `/api/*` to your Render backend domain.
 
-Before deploying to Vercel:
+## Key Files
 
-1. Deploy backend on Render first.
-2. Edit `vercel.json` and replace:
-   - `https://YOUR_RENDER_BACKEND_DOMAIN`
-   with your real Render backend domain.
-3. Deploy frontend on Vercel.
-
-This rewrite forwards frontend `/api/*` requests from Vercel to Render backend.
-
-## Replacing Placeholder Data Later
-
-When you send real images and product details, update:
-
-- `assets/js/data.js` (products, images, collections, blog)
-- Brand/contact copy in page HTML files and `assets/js/app.js`
-
+- Backend API server: `backend/server.js`
+- DB bootstrap SQL: `backend/sql/init.sql`
+- Frontend API integration: `assets/js/app.js`
+- Render config: `render.yaml`

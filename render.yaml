@@ -14,3 +14,7 @@ services:
         value: /tmp/brandshub49
       - key: SESSION_DAYS
         value: 30
+      - key: DB_SSL
+        value: require
+      - key: DATABASE_URL
+        sync: false

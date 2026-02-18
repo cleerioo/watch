@@ -5,6 +5,13 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const vm = require("vm");
+let Pool = null;
+
+try {
+  ({ Pool } = require("pg"));
+} catch (_error) {
+  Pool = null;
+}
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const DATA_DIR = process.env.DATA_DIR
@@ -16,6 +23,7 @@ const PORT = Number(process.env.PORT || 8080);
 const HOST = process.env.HOST || "127.0.0.1";
 const SESSION_DAYS = Number(process.env.SESSION_DAYS || 30);
 const MAX_BODY_BYTES = 1024 * 1024;
+const DATABASE_URL = String(process.env.DATABASE_URL || "").trim();
 
 const FILES = {
   users: path.join(DATA_DIR, "users.json"),
@@ -24,6 +32,28 @@ const FILES = {
   wishlists: path.join(DATA_DIR, "wishlists.json"),
   orders: path.join(DATA_DIR, "orders.json")
 };
+
+const STORE_DEFAULTS = {
+  users: [],
+  sessions: [],
+  carts: {},
+  wishlists: {},
+  orders: []
+};
+
+const FILE_KEY_MAP = new Map(Object.entries(FILES).map(([key, file]) => [file, key]));
+
+const storageState = {
+  users: [],
+  sessions: [],
+  carts: {},
+  wishlists: {},
+  orders: []
+};
+
+let storageMode = "file";
+let dbPool = null;
+let pendingPersist = Promise.resolve();
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -39,8 +69,6 @@ const MIME_TYPES = {
   ".txt": "text/plain; charset=utf-8",
   ".map": "application/json; charset=utf-8"
 };
-
-ensureDataFiles();
 
 const catalog = loadCatalogData();
 const products = Array.isArray(catalog.products) ? catalog.products : [];
@@ -70,10 +98,164 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, HOST, () => {
-  // eslint-disable-next-line no-console
-  console.log(`BrandsHub49 backend running on http://${HOST}:${PORT}`);
-});
+void bootstrap();
+
+async function bootstrap() {
+  try {
+    await initPersistence();
+
+    server.listen(PORT, HOST, () => {
+      // eslint-disable-next-line no-console
+      console.log(`BrandsHub49 backend running on http://${HOST}:${PORT}`);
+      // eslint-disable-next-line no-console
+      console.log(`Persistence mode: ${storageMode}${storageMode === "postgres" ? " (PostgreSQL)" : " (JSON files)"}`);
+    });
+
+    setupGracefulShutdown();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Failed to start backend: ${String(error.message || error)}`);
+    process.exit(1);
+  }
+}
+
+async function initPersistence() {
+  ensureDataFiles();
+
+  if (!DATABASE_URL) {
+    storageMode = "file";
+    return;
+  }
+
+  if (!Pool) {
+    // eslint-disable-next-line no-console
+    console.error("DATABASE_URL is set but 'pg' is not installed. Falling back to JSON file storage.");
+    storageMode = "file";
+    return;
+  }
+
+  const ssl = resolveSslConfig();
+  const options = { connectionString: DATABASE_URL };
+  if (ssl !== null) {
+    options.ssl = ssl;
+  }
+
+  try {
+    dbPool = new Pool(options);
+    await dbPool.query("SELECT 1");
+    await dbPool.query(`
+      CREATE TABLE IF NOT EXISTS app_store (
+        key TEXT PRIMARY KEY,
+        value JSONB NOT NULL,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+
+    for (const [key, fallback] of Object.entries(STORE_DEFAULTS)) {
+      const row = await dbPool.query("SELECT value FROM app_store WHERE key = $1", [key]);
+
+      if (!row.rows.length) {
+        const seed = deepClone(fallback);
+        storageState[key] = seed;
+        await dbPool.query(
+          `
+          INSERT INTO app_store (key, value, updated_at)
+          VALUES ($1, $2::jsonb, NOW())
+          ON CONFLICT (key) DO UPDATE
+          SET value = EXCLUDED.value, updated_at = NOW()
+          `,
+          [key, JSON.stringify(seed)]
+        );
+        continue;
+      }
+
+      storageState[key] = normalizeStoreValue(key, row.rows[0].value, fallback);
+    }
+
+    storageMode = "postgres";
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`PostgreSQL init failed (${String(error.message || error)}). Falling back to JSON file storage.`);
+    storageMode = "file";
+    if (dbPool) {
+      try {
+        await dbPool.end();
+      } catch (_closeError) {
+        // No-op
+      }
+      dbPool = null;
+    }
+  }
+}
+
+function resolveSslConfig() {
+  const raw = String(process.env.DB_SSL || "require").trim().toLowerCase();
+  if (!raw || raw === "disable" || raw === "false" || raw === "off") {
+    return null;
+  }
+  return { rejectUnauthorized: false };
+}
+
+function normalizeStoreValue(key, value, fallback) {
+  if (key === "carts" || key === "wishlists") {
+    return value && typeof value === "object" && !Array.isArray(value) ? value : deepClone(fallback);
+  }
+
+  if (Array.isArray(fallback)) {
+    return Array.isArray(value) ? value : deepClone(fallback);
+  }
+
+  return value ?? deepClone(fallback);
+}
+
+function schedulePersist(key) {
+  if (storageMode !== "postgres" || !dbPool) return;
+
+  const snapshot = JSON.stringify(deepClone(storageState[key]));
+  pendingPersist = pendingPersist
+    .then(async () => {
+      await dbPool.query(
+        `
+        INSERT INTO app_store (key, value, updated_at)
+        VALUES ($1, $2::jsonb, NOW())
+        ON CONFLICT (key) DO UPDATE
+        SET value = EXCLUDED.value, updated_at = NOW()
+        `,
+        [key, snapshot]
+      );
+    })
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error(`Failed to persist key '${key}': ${String(error.message || error)}`);
+    });
+}
+
+async function flushPendingWrites() {
+  try {
+    await pendingPersist;
+  } catch (_error) {
+    // No-op
+  }
+}
+
+function setupGracefulShutdown() {
+  const shutdown = async () => {
+    await flushPendingWrites();
+
+    if (dbPool) {
+      try {
+        await dbPool.end();
+      } catch (_error) {
+        // No-op
+      }
+    }
+
+    process.exit(0);
+  };
+
+  process.once("SIGTERM", shutdown);
+  process.once("SIGINT", shutdown);
+}
 
 function ensureDataFiles() {
   if (!fs.existsSync(DATA_DIR)) {
@@ -102,6 +284,15 @@ function ensureFile(file, fallback) {
 }
 
 function readJson(file, fallback) {
+  const key = FILE_KEY_MAP.get(file);
+  if (storageMode === "postgres" && key) {
+    const value = storageState[key];
+    if (typeof value === "undefined") {
+      return deepClone(fallback);
+    }
+    return deepClone(value);
+  }
+
   try {
     const raw = fs.readFileSync(file, "utf8");
     return JSON.parse(raw);
@@ -111,6 +302,13 @@ function readJson(file, fallback) {
 }
 
 function writeJson(file, value) {
+  const key = FILE_KEY_MAP.get(file);
+  if (storageMode === "postgres" && key) {
+    storageState[key] = deepClone(value);
+    schedulePersist(key);
+    return;
+  }
+
   fs.writeFileSync(file, JSON.stringify(value, null, 2));
 }
 
@@ -206,7 +404,11 @@ async function handleApi(req, res, pathname, url) {
     sendJson(res, 200, {
       ok: true,
       service: "BrandsHub49 API",
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      persistence: {
+        mode: storageMode,
+        databaseConfigured: Boolean(DATABASE_URL)
+      }
     });
     return;
   }
@@ -801,6 +1003,10 @@ function filterProducts(searchParams) {
     limit,
     totalPages
   };
+}
+
+function deepClone(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
 function parseJsonBody(req, res) {
