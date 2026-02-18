@@ -4,16 +4,13 @@ services:
     env: node
     plan: free
     autoDeploy: true
+    healthCheckPath: /api/health
     buildCommand: npm install --omit=dev
     startCommand: npm start
     envVars:
       - key: HOST
         value: 0.0.0.0
       - key: DATA_DIR
-        value: /var/data/brandshub49
+        value: /tmp/brandshub49
       - key: SESSION_DAYS
         value: 30
-    disk:
-      name: brandshub49-data
-      mountPath: /var/data/brandshub49
-      sizeGB: 1
