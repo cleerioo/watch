@@ -135,43 +135,79 @@
     const opts = options || {};
     const method = opts.method || "GET";
     const auth = opts.auth !== false;
-    const headers = {
-      ...(opts.headers || {})
-    };
+    const maxAttempts = 3;
+    let attempt = 0;
+    let lastError = null;
 
-    if (opts.body !== undefined) {
-      headers["Content-Type"] = "application/json";
-    }
+    while (attempt < maxAttempts) {
+      attempt += 1;
 
-    if (auth) {
-      const token = getAuthToken();
-      if (!token) {
-        const missingToken = new Error("Please login to continue.");
-        missingToken.status = 401;
-        throw missingToken;
+      try {
+        const headers = {
+          ...(opts.headers || {})
+        };
+
+        if (opts.body !== undefined) {
+          headers["Content-Type"] = "application/json";
+        }
+
+        if (auth) {
+          const token = getAuthToken();
+          if (!token) {
+            const missingToken = new Error("Please login to continue.");
+            missingToken.status = 401;
+            throw missingToken;
+          }
+          headers.Authorization = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_BASE}${path}`, {
+          method,
+          headers,
+          body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined
+        });
+
+        const text = await response.text();
+        const payload = text ? safeJsonParse(text) : {};
+
+        if (!response.ok) {
+          const renderNoServer =
+            response.status === 404 &&
+            String(response.headers.get("x-render-routing") || "").toLowerCase() === "no-server";
+          const transientStatus = [502, 503, 504].includes(response.status);
+          const shouldRetry = attempt < maxAttempts && (renderNoServer || transientStatus);
+
+          if (shouldRetry) {
+            await sleep(500 * attempt);
+            continue;
+          }
+
+          const message =
+            (payload && (payload.error || payload.message)) || `Request failed with status ${response.status}`;
+          const error = new Error(message);
+          error.status = response.status;
+          error.payload = payload;
+          throw error;
+        }
+
+        return payload || {};
+      } catch (error) {
+        const networkError =
+          error &&
+          (error.name === "TypeError" || /network|failed to fetch|fetch/i.test(String(error.message || "")));
+        const shouldRetryNetwork = networkError && attempt < maxAttempts;
+
+        if (shouldRetryNetwork) {
+          await sleep(500 * attempt);
+          lastError = error;
+          continue;
+        }
+
+        throw error;
       }
-      headers.Authorization = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE}${path}`, {
-      method,
-      headers,
-      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined
-    });
-
-    const text = await response.text();
-    const payload = text ? safeJsonParse(text) : {};
-
-    if (!response.ok) {
-      const message =
-        (payload && (payload.error || payload.message)) || `Request failed with status ${response.status}`;
-      const error = new Error(message);
-      error.status = response.status;
-      error.payload = payload;
-      throw error;
-    }
-
-    return payload || {};
+    throw lastError || new Error("Request failed");
   }
 
   function safeJsonParse(text) {
@@ -180,6 +216,10 @@
     } catch (_error) {
       return {};
     }
+  }
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   function clearAuthSession() {
