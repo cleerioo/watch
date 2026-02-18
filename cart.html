@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cart | BrandsHub49</title>
+    <meta
+      name="description"
+      content="Review items in your cart, apply coupon codes, estimate shipping, and proceed to secure checkout."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="section">
+      <div class="container section-head" style="margin-bottom: 20px;">
+        <h2>Your Shopping Cart</h2>
+      </div>
+
+      <div class="container cart-layout">
+        <section class="cart-table">
+          <div class="cart-head">
+            <div>Product</div>
+            <div>Price</div>
+            <div>Quantity</div>
+            <div>Subtotal</div>
+          </div>
+          <div id="cart-items"></div>
+        </section>
+
+        <aside class="order-card">
+          <h3>Order Summary</h3>
+          <div class="order-line"><span>Subtotal</span><strong id="cart-subtotal">₹0</strong></div>
+          <div class="order-line"><span>Discount</span><strong id="cart-discount">₹0</strong></div>
+          <div class="order-line"><span>Estimated Shipping</span><strong id="cart-shipping">₹0</strong></div>
+          <div class="order-total"><span>Total</span><span id="cart-total">₹0</span></div>
+
+          <div class="coupon-wrap">
+            <label for="coupon-code">Coupon Code</label>
+            <div class="inline-input">
+              <input id="coupon-code" class="input" type="text" placeholder="WATCH10" />
+              <button id="apply-coupon" class="btn btn-outline" type="button">Apply</button>
+            </div>
+          </div>
+
+          <div class="shipping-wrap">
+            <label for="shipping-region">Estimated Shipping</label>
+            <div class="inline-input">
+              <select id="shipping-region" class="input">
+                <option value="india">India</option>
+                <option value="asia">Asia</option>
+                <option value="global">Global</option>
+              </select>
+              <button id="calc-shipping" class="btn btn-outline" type="button">Calculate</button>
+            </div>
+          </div>
+
+          <button id="go-checkout" class="btn btn-gold" style="width: 100%; margin-top: 16px;" type="button">
+            Proceed to Checkout
+          </button>
+        </aside>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/cart.js"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Runtime data and logs
+backend/data/*.json
+backend/logs/*
+!backend/data/.gitkeep
+!backend/logs/.gitkeep
+
+# Env
+.env
+.env.*
+
+# Vercel
+.vercel/

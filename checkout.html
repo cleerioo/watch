@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout | BrandsHub49</title>
+    <meta
+      name="description"
+      content="Secure checkout with shipping, billing, delivery, and payment options."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="section" id="checkout-root">
+      <div class="container section-head" style="margin-bottom: 18px;">
+        <h2>Secure Checkout</h2>
+      </div>
+
+      <div class="container checkout-layout">
+        <section>
+          <div class="checkout-steps" aria-label="Checkout progress">
+            <div class="step active">1. Shipping</div>
+            <div class="step">2. Billing</div>
+            <div class="step">3. Delivery</div>
+            <div class="step">4. Payment</div>
+          </div>
+
+          <section class="checkout-section" data-checkout-step>
+            <h3>Shipping Information</h3>
+            <div class="checkout-grid">
+              <input class="input" type="text" placeholder="First Name" required />
+              <input class="input" type="text" placeholder="Last Name" required />
+              <input class="input" type="email" placeholder="Email" required />
+              <input class="input" type="tel" placeholder="Phone" required />
+              <input class="input full" type="text" placeholder="Address Line" required />
+              <input class="input" type="text" placeholder="City" required />
+              <input class="input" type="text" placeholder="Postal Code" required />
+              <select class="input" required>
+                <option value="">Select Country</option>
+                <option>India</option>
+                <option>United Arab Emirates</option>
+                <option>United States</option>
+              </select>
+            </div>
+            <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
+              <button class="btn btn-gold" data-next-step type="button">Continue</button>
+            </div>
+          </section>
+
+          <section class="checkout-section hidden" data-checkout-step>
+            <h3>Billing Address</h3>
+            <div class="checkout-grid">
+              <input class="input full" type="text" placeholder="Billing Address" required />
+              <input class="input" type="text" placeholder="City" required />
+              <input class="input" type="text" placeholder="Postal Code" required />
+              <label class="full"><input type="checkbox" checked /> Same as shipping address</label>
+            </div>
+            <div style="margin-top: 12px; display: flex; justify-content: space-between;">
+              <button class="btn btn-outline" data-prev-step type="button">Back</button>
+              <button class="btn btn-gold" data-next-step type="button">Continue</button>
+            </div>
+          </section>
+
+          <section class="checkout-section hidden" data-checkout-step>
+            <h3>Delivery Options</h3>
+            <div class="radio-list">
+              <label><input type="radio" name="delivery" checked required /> Standard Delivery (3-5 days) - ₹399</label>
+              <label><input type="radio" name="delivery" required /> Express Delivery (1-2 days) - ₹799</label>
+              <label><input type="radio" name="delivery" required /> Store Pickup - Free</label>
+            </div>
+            <div style="margin-top: 12px; display: flex; justify-content: space-between;">
+              <button class="btn btn-outline" data-prev-step type="button">Back</button>
+              <button class="btn btn-gold" data-next-step type="button">Continue</button>
+            </div>
+          </section>
+
+          <section class="checkout-section hidden" data-checkout-step>
+            <h3>Payment Method</h3>
+            <div class="radio-list">
+              <label><input type="radio" name="payment" checked required /> Credit / Debit Card</label>
+              <label><input type="radio" name="payment" required /> UPI</label>
+              <label><input type="radio" name="payment" required /> Wallets</label>
+            </div>
+            <div class="checkout-grid" style="margin-top: 10px;">
+              <input class="input full" type="text" placeholder="Cardholder Name" required />
+              <input class="input full" type="text" placeholder="Card Number" required />
+              <input class="input" type="text" placeholder="Expiry MM/YY" required />
+              <input class="input" type="text" placeholder="CVV" required />
+            </div>
+            <div class="security-row">
+              <span class="security-badge">SSL Encrypted Checkout</span>
+              <span class="security-badge">Secure Payment Gateway</span>
+              <span class="security-badge">PCI-DSS Compliant</span>
+            </div>
+            <div style="margin-top: 12px; display: flex; justify-content: space-between;">
+              <button class="btn btn-outline" data-prev-step type="button">Back</button>
+              <button class="btn btn-gold" id="place-order" type="button">Place Order</button>
+            </div>
+          </section>
+        </section>
+
+        <aside class="order-card">
+          <h3>Review Order</h3>
+          <div id="checkout-summary"></div>
+          <div class="order-total"><span>Total</span><span id="checkout-total">₹0</span></div>
+        </aside>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/checkout.js"></script>
+  </body>
+</html>

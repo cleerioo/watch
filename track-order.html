@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Track Order | BrandsHub49</title>
+    <meta name="description" content="Track your BrandsHub49 order status in real time." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="section">
+      <div class="container" style="max-width: 760px;">
+        <div class="section-head" style="margin-bottom: 12px;">
+          <h2>Track Your Order</h2>
+        </div>
+        <div class="form-card">
+          <form id="track-order-form" class="form-grid">
+            <input class="input" type="text" name="orderId" placeholder="Order ID (e.g., BH49-12345678)" required />
+            <input class="input" type="email" name="email" placeholder="Email used at checkout" required />
+            <button class="btn btn-gold" type="submit">Track Order</button>
+          </form>
+          <div id="track-result"></div>
+        </div>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/utility-pages.js"></script>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | BrandsHub49</title>
+    <meta name="description" content="Login to BrandsHub49 to manage your profile, orders, and wishlist." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="auth-wrap">
+      <div class="auth-card">
+        <h1>Welcome Back</h1>
+        <p>Login to access your account dashboard and saved watches.</p>
+        <form id="login-form" class="form-grid">
+          <input class="input" type="email" name="email" placeholder="Email" required />
+          <input class="input" type="password" name="password" placeholder="Password" required />
+          <button class="btn btn-gold" type="submit">Login</button>
+        </form>
+        <p style="margin-top: 12px;">
+          <a href="forgot-password.html">Forgot Password?</a><br />
+          New here? <a href="register.html">Create account</a>
+        </p>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/auth.js"></script>
+  </body>
+</html>

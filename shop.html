@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop All Watches | BrandsHub49</title>
+    <meta
+      name="description"
+      content="Browse premium watches by brand, strap, type, price, and collection at BrandsHub49."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body data-page="shop">
+    <div id="site-header"></div>
+
+    <main>
+      <section
+        class="page-hero"
+        style="background-image: url('https://images.unsplash.com/photo-1548171915-e79a1f5ac7c0?auto=format&fit=crop&w=1800&q=80');"
+      >
+        <div class="inner">
+          <h1>Shop All Watches</h1>
+          <p>Discover trending analog, digital, premium and smartwatch collections.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container shop-layout">
+          <aside class="filter-panel" aria-label="Product filters">
+            <div class="filter-group">
+              <h4>Search Within Watches</h4>
+              <input id="filter-search" class="input" type="search" placeholder="Search by model or brand" />
+            </div>
+
+            <div class="filter-group">
+              <h4>Price Slider</h4>
+              <div class="price-range">
+                <input id="price-min-range" type="range" step="500" />
+                <input id="price-max-range" type="range" step="500" />
+                <div class="range-row">
+                  <input id="price-min-input" class="input" type="number" min="0" />
+                  <input id="price-max-input" class="input" type="number" min="0" />
+                </div>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Brand</h4>
+              <div id="brand-filters" class="filter-list"></div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Strap Material</h4>
+              <div id="strap-filters" class="filter-list"></div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Watch Type</h4>
+              <div id="type-filters" class="filter-list"></div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Gender</h4>
+              <div id="gender-filters" class="filter-list"></div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Collection</h4>
+              <div id="collection-filters" class="filter-list"></div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Rating</h4>
+              <div id="rating-filters" class="filter-list"></div>
+            </div>
+          </aside>
+
+          <section>
+            <div class="products-toolbar">
+              <div id="shop-count" class="toolbar-meta">0 watches found</div>
+              <label>
+                Sort
+                <select id="sort-select" class="input" style="min-width: 190px;">
+                  <option value="best">Best Selling</option>
+                  <option value="newest">Newest</option>
+                  <option value="price-asc">Price (Low → High)</option>
+                  <option value="price-desc">Price (High → Low)</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="shop-grid" class="product-grid"></div>
+            <div id="shop-pagination" class="pagination" aria-label="Pagination"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/shop.js"></script>
+  </body>
+</html>

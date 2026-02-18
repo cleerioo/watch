@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Watch Details | BrandsHub49</title>
+    <meta
+      name="description"
+      content="Explore premium watch details, specifications, reviews, and secure checkout options at BrandsHub49."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body data-page="shop">
+    <div id="site-header"></div>
+
+    <main>
+      <div class="container breadcrumb" id="pdp-breadcrumb" aria-label="Breadcrumb"></div>
+
+      <section class="section" style="padding-top: 0;">
+        <div class="container pdp-layout">
+          <div>
+            <div class="gallery-main">
+              <img id="pdp-main-image" src="" alt="Product image" loading="eager" />
+              <span class="zoom-hint">Click to zoom</span>
+            </div>
+            <div id="pdp-thumbs" class="thumb-row"></div>
+          </div>
+          <div class="product-summary" id="pdp-details"></div>
+        </div>
+
+        <div class="container tabs">
+          <div class="tab-head" role="tablist" aria-label="Product information tabs">
+            <button class="tab-btn active" data-tab-target="tab-description">Description</button>
+            <button class="tab-btn" data-tab-target="tab-features">Features & Benefits</button>
+            <button class="tab-btn" data-tab-target="tab-warranty">Warranty & Returns</button>
+            <button class="tab-btn" data-tab-target="tab-reviews">Reviews</button>
+          </div>
+          <div id="tab-content"></div>
+        </div>
+      </section>
+
+      <section class="section related-wrap" style="padding-top: 10px;">
+        <div class="container">
+          <div class="section-head">
+            <h2>Related Watches</h2>
+          </div>
+          <div class="carousel-shell">
+            <button id="related-prev" class="carousel-control prev" aria-label="Previous related watches">‹</button>
+            <div id="related-track" class="carousel-track"></div>
+            <button id="related-next" class="carousel-control next" aria-label="Next related watches">›</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="sticky-add-bar" class="sticky-add-bar" role="complementary" aria-label="Sticky add to cart bar">
+      <div class="container sticky-add-inner">
+        <div>
+          <strong id="sticky-product-name">Watch</strong>
+          <div id="sticky-product-price"></div>
+        </div>
+        <button class="btn btn-gold" id="sticky-add-btn">Add to Cart</button>
+      </div>
+    </div>
+
+    <div id="lightbox" class="lightbox" aria-modal="true" role="dialog" aria-label="Image preview">
+      <button id="lightbox-close" class="close" aria-label="Close image">×</button>
+      <img id="lightbox-image" src="" alt="Expanded watch image" />
+    </div>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/product.js"></script>
+  </body>
+</html>

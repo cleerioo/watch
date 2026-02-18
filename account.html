@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Account | BrandsHub49</title>
+    <meta
+      name="description"
+      content="Manage your BrandsHub49 profile, address book, order history, and wishlist from your account dashboard."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="section" id="account-root">
+      <div class="container section-head" style="margin-bottom: 16px;">
+        <h2>Account Dashboard</h2>
+        <button class="btn btn-outline" id="logout-btn" type="button">Logout</button>
+      </div>
+
+      <div class="container account-layout">
+        <aside class="account-nav">
+          <button class="active" data-account-tab="profile">Profile</button>
+          <button data-account-tab="address">Address Book</button>
+          <button data-account-tab="orders">Order History</button>
+          <button data-account-tab="wishlist">Wishlist</button>
+        </aside>
+
+        <section class="account-panel" data-account-panel="profile">
+          <h3>Profile</h3>
+          <form id="profile-form" class="form-grid">
+            <input id="profile-name" class="input" type="text" placeholder="Name" required />
+            <input id="profile-email" class="input" type="email" placeholder="Email" required />
+            <input id="profile-phone" class="input" type="tel" placeholder="Phone" />
+            <button class="btn btn-gold" type="submit">Save Profile</button>
+          </form>
+        </section>
+
+        <section class="account-panel hidden" data-account-panel="address">
+          <h3>Address Book</h3>
+          <form id="address-form" class="form-grid">
+            <textarea id="address-text" class="input" rows="5" placeholder="Default address"></textarea>
+            <button class="btn btn-gold" type="submit">Save Address</button>
+          </form>
+        </section>
+
+        <section class="account-panel hidden" data-account-panel="orders">
+          <h3>Order History</h3>
+          <div id="order-history"></div>
+        </section>
+
+        <section class="account-panel hidden" data-account-panel="wishlist">
+          <h3>Wishlist</h3>
+          <div id="account-wishlist"></div>
+        </section>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/account.js"></script>
+  </body>
+</html>

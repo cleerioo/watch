@@ -1,0 +1,12 @@
+{
+  "name": "brandshub49-ecommerce",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BrandsHub49 watch ecommerce website with Node.js backend APIs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node backend/server.js"
+  }
+}
