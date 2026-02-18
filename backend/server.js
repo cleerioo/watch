@@ -54,6 +54,7 @@ const storageState = {
 let storageMode = "file";
 let dbPool = null;
 let pendingPersist = Promise.resolve();
+let persistenceError = "";
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -124,6 +125,7 @@ async function initPersistence() {
 
   if (!DATABASE_URL) {
     storageMode = "file";
+    persistenceError = "";
     return;
   }
 
@@ -131,6 +133,7 @@ async function initPersistence() {
     // eslint-disable-next-line no-console
     console.error("DATABASE_URL is set but 'pg' is not installed. Falling back to JSON file storage.");
     storageMode = "file";
+    persistenceError = "DATABASE_URL is set but 'pg' package is unavailable.";
     return;
   }
 
@@ -173,10 +176,12 @@ async function initPersistence() {
     }
 
     storageMode = "postgres";
+    persistenceError = "";
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(`PostgreSQL init failed (${String(error.message || error)}). Falling back to JSON file storage.`);
     storageMode = "file";
+    persistenceError = String(error.message || error);
     if (dbPool) {
       try {
         await dbPool.end();
@@ -401,14 +406,19 @@ async function handleApi(req, res, pathname, url) {
   const method = req.method.toUpperCase();
 
   if (pathname === "/api/health" && method === "GET") {
+    const persistence = {
+      mode: storageMode,
+      databaseConfigured: Boolean(DATABASE_URL)
+    };
+    if (persistence.databaseConfigured && storageMode !== "postgres" && persistenceError) {
+      persistence.error = persistenceError;
+    }
+
     sendJson(res, 200, {
       ok: true,
       service: "BrandsHub49 API",
       timestamp: new Date().toISOString(),
-      persistence: {
-        mode: storageMode,
-        databaseConfigured: Boolean(DATABASE_URL)
-      }
+      persistence
     });
     return;
   }
